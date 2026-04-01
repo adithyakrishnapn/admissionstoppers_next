@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppCTA from "@/components/ui/WhatsAppCTA";
 import FirstTimePopup from "@/components/ui/FirstTimePopup";
+import Preloader from "@/components/ui/Preloader";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -42,6 +43,7 @@ export default function RootLayout({
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
       </head>
       <body className="min-h-full flex flex-col font-sans text-gray-800 bg-gray-50/50">
+        <Preloader />
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />
