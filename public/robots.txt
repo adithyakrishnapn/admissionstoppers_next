@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /sitemap.xml
+Disallow: /admin
+Disallow: /api
+Disallow: *?utm_
+Disallow: *?sort=
+Disallow: *?search=
+
+Sitemap: https://admissionstopper.com/sitemap.xml
+Sitemap: https://admissionstopper.com/sitemap-0.xml
+
+# Crawl delay
+Crawl-delay: 1

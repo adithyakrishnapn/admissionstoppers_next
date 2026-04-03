@@ -9,7 +9,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 export default function FirstTimePopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", interestedCourse: "" });
 
   useEffect(() => {
     // Check local storage to see if user has already seen the popup or submitted
@@ -49,7 +49,7 @@ export default function FirstTimePopup() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -140,6 +140,25 @@ export default function FirstTimePopup() {
                       className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400"
                       placeholder="john@example.com"
                     />
+                  </div>
+                  <div>
+                    <label htmlFor="interestedCourse" className="block text-sm font-medium text-gray-700 mb-1">Interested Course</label>
+                    <select
+                      id="interestedCourse"
+                      name="interestedCourse"
+                      required
+                      value={formData.interestedCourse}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                    >
+                      <option value="" disabled>Select a course</option>
+                      <option value="Medical">Medical</option>
+                      <option value="Engineering">Engineering</option>
+                      <option value="Paramedical">Paramedical</option>
+                      <option value="UG">Undergraduate (UG)</option>
+                      <option value="Diploma">Diploma</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                   
                   {status === "error" && (
