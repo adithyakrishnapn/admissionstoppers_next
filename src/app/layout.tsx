@@ -41,7 +41,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Admissions Topper" }],
   creator: "Admissions Topper",
   publisher: "Admissions Topper",
-  metadataColor: "#06BBCC",
   themeColor: "#06BBCC",
   icons: {
     icon: "/img/at.ico",
