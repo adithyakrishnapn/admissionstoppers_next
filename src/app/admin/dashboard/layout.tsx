@@ -11,6 +11,7 @@ import { signOut } from "firebase/auth";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, isAdmin } = useAuth();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -36,8 +37,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.push("/admin/login");
     }
   };
-
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
