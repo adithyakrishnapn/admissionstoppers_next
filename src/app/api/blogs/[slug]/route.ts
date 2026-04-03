@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import type { DecodedIdToken } from "firebase-admin/auth";
 import {
   getDocs,
   limit,
@@ -25,8 +26,7 @@ function toSlug(value: string) {
     .replace(/(^-|-$)+/g, "");
 }
 
-async function getAuthorizedUser(request: Request) {
-  const adminAuth = getAdminAuth();
+async function getAuthorizedUser(request: Request, adminAuth: NonNullable<ReturnType<typeof getAdminAuth>>) {
   const authHeader = request.headers.get("authorization");
 
   if (!authHeader?.startsWith("Bearer ")) {
@@ -78,14 +78,19 @@ export async function PATCH(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const adminAuth = getAdminAuth();
     const adminDb = getAdminDb();
-    const user = await getAuthorizedUser(request);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!adminAuth || !adminDb) {
+      return NextResponse.json(
+        { error: "Server auth is not configured. Check FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY." },
+        { status: 500 }
+      );
     }
 
-    if (!adminDb) {
-      return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
+    const user: DecodedIdToken | null = await getAuthorizedUser(request, adminAuth);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { slug } = await params;
@@ -142,14 +147,19 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const adminAuth = getAdminAuth();
     const adminDb = getAdminDb();
-    const user = await getAuthorizedUser(request);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!adminAuth || !adminDb) {
+      return NextResponse.json(
+        { error: "Server auth is not configured. Check FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY." },
+        { status: 500 }
+      );
     }
 
-    if (!adminDb) {
-      return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
+    const user: DecodedIdToken | null = await getAuthorizedUser(request, adminAuth);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { slug } = await params;
