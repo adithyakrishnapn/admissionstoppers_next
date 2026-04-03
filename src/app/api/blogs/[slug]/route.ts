@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import { adminAuth, adminDb } from "@/lib/firebase-admin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import {
   getDocs,
   limit,
@@ -26,6 +26,7 @@ function toSlug(value: string) {
 }
 
 async function getAuthorizedUser(request: Request) {
+  const adminAuth = getAdminAuth();
   const authHeader = request.headers.get("authorization");
 
   if (!authHeader?.startsWith("Bearer ")) {
@@ -77,6 +78,7 @@ export async function PATCH(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const adminDb = getAdminDb();
     const user = await getAuthorizedUser(request);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -140,6 +142,7 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const adminDb = getAdminDb();
     const user = await getAuthorizedUser(request);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
