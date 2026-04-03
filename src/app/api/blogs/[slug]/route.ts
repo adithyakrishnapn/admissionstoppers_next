@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
+import { adminAuth, adminDb } from "@/lib/firebase-admin";
 import {
-  collection,
-  deleteDoc,
   getDocs,
   limit,
   query,
-  updateDoc,
   where,
+  collection,
 } from "firebase/firestore";
 
 type BlogUpdatePayload = {
@@ -24,6 +23,25 @@ function toSlug(value: string) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
+}
+
+async function getAuthorizedUser(request: Request) {
+  const authHeader = request.headers.get("authorization");
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const idToken = authHeader.slice(7).trim();
+  if (!idToken || !adminAuth) {
+    return null;
+  }
+
+  try {
+    return await adminAuth.verifyIdToken(idToken);
+  } catch {
+    return null;
+  }
 }
 
 async function findBlogDocBySlug(slug: string) {
@@ -59,12 +77,19 @@ export async function PATCH(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    if (!db) {
+    const user = await getAuthorizedUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!adminDb) {
       return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
     }
 
     const { slug } = await params;
-    const blogDoc = await findBlogDocBySlug(slug);
+    const blogQuery = adminDb.collection("blogs").where("slug", "==", slug).limit(1);
+    const blogSnap = await blogQuery.get();
+    const blogDoc = blogSnap.empty ? null : blogSnap.docs[0];
     if (!blogDoc) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
@@ -90,7 +115,19 @@ export async function PATCH(
       updatedAt: new Date().toISOString(),
     };
 
-    await updateDoc(blogDoc.ref, updated);
+    if (updated.slug !== slug) {
+      const duplicateSlugSnap = await adminDb
+        .collection("blogs")
+        .where("slug", "==", updated.slug)
+        .limit(1)
+        .get();
+
+      if (!duplicateSlugSnap.empty) {
+        return NextResponse.json({ error: "A blog with this slug already exists" }, { status: 409 });
+      }
+    }
+
+    await blogDoc.ref.update(updated);
     return NextResponse.json({ id: blogDoc.id, ...updated });
   } catch (error) {
     console.error("Failed to update blog", error);
@@ -103,17 +140,24 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    if (!db) {
+    const user = await getAuthorizedUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!adminDb) {
       return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
     }
 
     const { slug } = await params;
-    const blogDoc = await findBlogDocBySlug(slug);
+    const blogQuery = adminDb.collection("blogs").where("slug", "==", slug).limit(1);
+    const blogSnap = await blogQuery.get();
+    const blogDoc = blogSnap.empty ? null : blogSnap.docs[0];
     if (!blogDoc) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
-    await deleteDoc(blogDoc.ref);
+    await blogDoc.ref.delete();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to delete blog", error);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import { addDoc, collection, getDocs, orderBy, query } from "firebase/firestore";
+import { adminAuth, adminDb } from "@/lib/firebase-admin";
+import { getDocs, orderBy, query, collection } from "firebase/firestore";
 
 type BlogPayload = {
   title?: string;
@@ -16,6 +17,25 @@ function toSlug(value: string) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
+}
+
+async function getAuthorizedUser(request: Request) {
+  const authHeader = request.headers.get("authorization");
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const idToken = authHeader.slice(7).trim();
+  if (!idToken || !adminAuth) {
+    return null;
+  }
+
+  try {
+    return await adminAuth.verifyIdToken(idToken);
+  } catch {
+    return null;
+  }
 }
 
 export async function GET() {
@@ -36,7 +56,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    if (!db) {
+    const user = await getAuthorizedUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!adminDb) {
       return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
     }
 
@@ -62,7 +87,12 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    const saved = await addDoc(collection(db, "blogs"), payload);
+    const duplicate = await adminDb.collection("blogs").where("slug", "==", slug).limit(1).get();
+    if (!duplicate.empty) {
+      return NextResponse.json({ error: "A blog with this slug already exists" }, { status: 409 });
+    }
+
+    const saved = await adminDb.collection("blogs").add(payload);
 
     return NextResponse.json({ id: saved.id, ...payload }, { status: 201 });
   } catch (error: any) {
