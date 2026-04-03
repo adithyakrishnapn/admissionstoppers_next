@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const sitemapEntries = staticPages.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: (route === '' ? 'weekly' : 'monthly') as const,
+    changeFrequency: (route === '' ? 'weekly' : 'monthly') as "weekly" | "monthly",
     priority: route === '' ? 1.0 : route.includes('/courses') || route.includes('/colleges') ? 0.9 : 0.8,
   }));
 
