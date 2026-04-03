@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
-import { auth } from "@/lib/firebase";
+import { addDoc, collection, getDocs, limit, query, where } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 
 export default function NewBlogPage() {
   const router = useRouter();
@@ -41,29 +42,30 @@ export default function NewBlogPage() {
         throw new Error("You must be logged in as admin");
       }
 
+      if (!db) {
+        throw new Error("Database is not configured");
+      }
+
       const payload = {
         title: formData.title.trim(),
         slug: formData.slug.trim(),
         excerpt: formData.excerpt.trim(),
         content: formData.content.trim(),
         image: formData.image.trim(),
+        createdAt: new Date().toISOString(),
       };
 
-      const idToken = await user.getIdToken();
-
-      const response = await fetch("/api/blogs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result?.error || "Failed to create blog post");
+      const duplicateSlugQuery = query(
+        collection(db, "blogs"),
+        where("slug", "==", payload.slug),
+        limit(1)
+      );
+      const duplicateSlugSnap = await getDocs(duplicateSlugQuery);
+      if (!duplicateSlugSnap.empty) {
+        throw new Error("A blog with this slug already exists. Please change the slug.");
       }
+
+      await addDoc(collection(db, "blogs"), payload);
 
       router.push("/admin/dashboard/blogs");
     } catch (err: unknown) {

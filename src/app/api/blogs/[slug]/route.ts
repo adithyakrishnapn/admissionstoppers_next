@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
-import type { DecodedIdToken } from "firebase-admin/auth";
 import {
+  collection,
+  deleteDoc,
   getDocs,
   limit,
   query,
+  updateDoc,
   where,
-  collection,
 } from "firebase/firestore";
 
 type BlogUpdatePayload = {
@@ -24,25 +24,6 @@ function toSlug(value: string) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
-}
-
-async function getAuthorizedUser(request: Request, adminAuth: NonNullable<ReturnType<typeof getAdminAuth>>) {
-  const authHeader = request.headers.get("authorization");
-
-  if (!authHeader?.startsWith("Bearer ")) {
-    return null;
-  }
-
-  const idToken = authHeader.slice(7).trim();
-  if (!idToken || !adminAuth) {
-    return null;
-  }
-
-  try {
-    return await adminAuth.verifyIdToken(idToken);
-  } catch {
-    return null;
-  }
 }
 
 async function findBlogDocBySlug(slug: string) {
@@ -78,25 +59,12 @@ export async function PATCH(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const adminAuth = getAdminAuth();
-    const adminDb = getAdminDb();
-
-    if (!adminAuth || !adminDb) {
-      return NextResponse.json(
-        { error: "Server auth is not configured. Check FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY." },
-        { status: 500 }
-      );
-    }
-
-    const user: DecodedIdToken | null = await getAuthorizedUser(request, adminAuth);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!db) {
+      return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
     }
 
     const { slug } = await params;
-    const blogQuery = adminDb.collection("blogs").where("slug", "==", slug).limit(1);
-    const blogSnap = await blogQuery.get();
-    const blogDoc = blogSnap.empty ? null : blogSnap.docs[0];
+    const blogDoc = await findBlogDocBySlug(slug);
     if (!blogDoc) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
@@ -122,19 +90,7 @@ export async function PATCH(
       updatedAt: new Date().toISOString(),
     };
 
-    if (updated.slug !== slug) {
-      const duplicateSlugSnap = await adminDb
-        .collection("blogs")
-        .where("slug", "==", updated.slug)
-        .limit(1)
-        .get();
-
-      if (!duplicateSlugSnap.empty) {
-        return NextResponse.json({ error: "A blog with this slug already exists" }, { status: 409 });
-      }
-    }
-
-    await blogDoc.ref.update(updated);
+    await updateDoc(blogDoc.ref, updated);
     return NextResponse.json({ id: blogDoc.id, ...updated });
   } catch (error) {
     console.error("Failed to update blog", error);
@@ -147,30 +103,17 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const adminAuth = getAdminAuth();
-    const adminDb = getAdminDb();
-
-    if (!adminAuth || !adminDb) {
-      return NextResponse.json(
-        { error: "Server auth is not configured. Check FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY." },
-        { status: 500 }
-      );
-    }
-
-    const user: DecodedIdToken | null = await getAuthorizedUser(request, adminAuth);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!db) {
+      return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
     }
 
     const { slug } = await params;
-    const blogQuery = adminDb.collection("blogs").where("slug", "==", slug).limit(1);
-    const blogSnap = await blogQuery.get();
-    const blogDoc = blogSnap.empty ? null : blogSnap.docs[0];
+    const blogDoc = await findBlogDocBySlug(slug);
     if (!blogDoc) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
-    await blogDoc.ref.delete();
+    await deleteDoc(blogDoc.ref);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to delete blog", error);

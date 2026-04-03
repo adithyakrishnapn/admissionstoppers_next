@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
-import { getDocs, orderBy, query, collection } from "firebase/firestore";
-import type { DecodedIdToken } from "firebase-admin/auth";
+import { addDoc, collection, getDocs, orderBy, query } from "firebase/firestore";
 
 type BlogPayload = {
   title?: string;
@@ -18,25 +16,6 @@ function toSlug(value: string) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
-}
-
-async function getAuthorizedUser(request: Request, adminAuth: NonNullable<ReturnType<typeof getAdminAuth>>) {
-  const authHeader = request.headers.get("authorization");
-
-  if (!authHeader?.startsWith("Bearer ")) {
-    return null;
-  }
-
-  const idToken = authHeader.slice(7).trim();
-  if (!idToken || !adminAuth) {
-    return null;
-  }
-
-  try {
-    return await adminAuth.verifyIdToken(idToken);
-  } catch {
-    return null;
-  }
 }
 
 export async function GET() {
@@ -57,19 +36,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const adminAuth = getAdminAuth();
-    const adminDb = getAdminDb();
-
-    if (!adminAuth || !adminDb) {
-      return NextResponse.json(
-        { error: "Server auth is not configured. Check FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY." },
-        { status: 500 }
-      );
-    }
-
-    const user: DecodedIdToken | null = await getAuthorizedUser(request, adminAuth);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!db) {
+      return NextResponse.json({ error: "Database is not configured" }, { status: 500 });
     }
 
     const body = (await request.json()) as BlogPayload;
@@ -94,12 +62,7 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    const duplicate = await adminDb.collection("blogs").where("slug", "==", slug).limit(1).get();
-    if (!duplicate.empty) {
-      return NextResponse.json({ error: "A blog with this slug already exists" }, { status: 409 });
-    }
-
-    const saved = await adminDb.collection("blogs").add(payload);
+    const saved = await addDoc(collection(db, "blogs"), payload);
 
     return NextResponse.json({ id: saved.id, ...payload }, { status: 201 });
   } catch (error: any) {
