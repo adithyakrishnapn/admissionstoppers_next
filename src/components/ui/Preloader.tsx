@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import LoadingSplash from "@/components/ui/LoadingSplash";
 
 const MIN_VISIBLE_MS = 1100;
-const FADE_MS = 250;
+const FADE_MS = 260;
 
 export default function Preloader() {
   const [isVisible, setIsVisible] = useState(true);
@@ -29,11 +29,11 @@ export default function Preloader() {
 
   return (
     <div
-      className={`transition-opacity duration-[250ms] ${isFading ? "opacity-0" : "opacity-100"}`}
+      className={`transition-opacity duration-[260ms] ${isFading ? "opacity-0" : "opacity-100"}`}
       aria-busy="true"
       aria-live="polite"
     >
-      <LoadingSplash subtitle="Loading..." />
+      <LoadingSplash subtitle="Admissionstopper" />
     </div>
   );
 }

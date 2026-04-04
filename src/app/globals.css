@@ -27,6 +27,46 @@ body {
   overflow-x: hidden;
 }
 
+@keyframes soft-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0);
+  }
+}
+
+@keyframes soft-float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -20px, 0);
+  }
+}
+
+@keyframes shimmer-x {
+  0% {
+    transform: translateX(-150%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .blog-content {
   color: #374151;
   font-size: 1.05rem;
@@ -121,5 +161,31 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .animate-soft-float {
+    animation: soft-float 4.4s ease-in-out infinite;
+  }
+
+  .animate-soft-float-slow {
+    animation: soft-float-slow 6s ease-in-out infinite;
+  }
+
+  .animate-shimmer-x {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .animate-shimmer-x::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.65) 50%, transparent 100%);
+    animation: shimmer-x 1.3s linear infinite;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.7s ease-out both;
   }
 }

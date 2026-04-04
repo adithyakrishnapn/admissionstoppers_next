@@ -51,6 +51,8 @@ export default function HeroCarousel() {
             style={{ backgroundImage: `url('${slides[current].image}')` }}
           />
           <div className="absolute inset-0 bg-[#181d38]/70 flex items-center">
+            <div className="pointer-events-none absolute -left-24 top-1/4 h-64 w-64 rounded-full bg-primary/20 blur-3xl animate-soft-float" />
+            <div className="pointer-events-none absolute -right-28 bottom-1/4 h-72 w-72 rounded-full bg-cyan-300/15 blur-3xl animate-soft-float-slow" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
               <div className="max-w-3xl">
                 <motion.h1 
@@ -94,6 +96,17 @@ export default function HeroCarousel() {
       <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/30 bg-black/20 backdrop-blur flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all z-10 hidden md:flex">
         <ChevronRight size={24} />
       </button>
+
+      <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+        {slides.map((slide, index) => (
+          <button
+            key={slide.title}
+            onClick={() => setCurrent(index)}
+            aria-label={`Go to slide ${index + 1}`}
+            className={`h-2.5 rounded-full transition-all duration-300 ${current === index ? "w-9 bg-white" : "w-2.5 bg-white/45 hover:bg-white/70"}`}
+          />
+        ))}
+      </div>
     </div>
   );
 }

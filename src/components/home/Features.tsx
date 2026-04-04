@@ -1,4 +1,5 @@
 import { GraduationCap, Globe, Home, BookOpen } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
 
 export default function Features() {
   const features = [
@@ -27,23 +28,24 @@ export default function Features() {
   return (
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <Reveal className="text-center mb-16">
           <h6 className="text-primary font-semibold tracking-wider uppercase mb-2 inline-block relative border-b-2 border-primary pb-1">Why Us?</h6>
           <h2 className="text-3xl md:text-5xl font-bold text-secondary">Why Choose Admissions Topper</h2>
-        </div>
+        </Reveal>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, i) => (
-            <div 
-              key={i}
-              className="group bg-white rounded-2xl p-8 hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] hover:-translate-y-2 transition-all duration-300 border border-gray-100"
-            >
-              <div className="w-16 h-16 bg-accent rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary transition-all duration-300">
-                <feature.icon className="w-8 h-8 text-primary group-hover:text-white transition-colors" />
+            <Reveal key={feature.title} delay={i * 0.08} y={24}>
+              <div 
+                className="group bg-white rounded-2xl p-8 hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+              >
+                <div className="w-16 h-16 bg-accent rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary transition-all duration-300">
+                  <feature.icon className="w-8 h-8 text-primary group-hover:text-white transition-colors" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-secondary">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed font-light">{feature.desc}</p>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-secondary">{feature.title}</h3>
-              <p className="text-gray-600 leading-relaxed font-light">{feature.desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
