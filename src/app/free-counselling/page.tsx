@@ -81,6 +81,11 @@ export default function FreeCounsellingPage() {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Place</label>
+                  <input type="text" name="place" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="Your city or town" />
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Location</label>
                   <select name="location" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all bg-white">
                     <option value="">Select a region</option>

@@ -3,13 +3,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send } from "lucide-react";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function FirstTimePopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", interestedCourse: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", place: "", interestedCourse: "" });
 
   useEffect(() => {
     // Check local storage to see if user has already seen the popup or submitted
@@ -34,11 +32,25 @@ export default function FirstTimePopup() {
     setStatus("submitting");
 
     try {
-      await addDoc(collection(db, "leads"), {
-        ...formData,
-        createdAt: serverTimestamp(),
-        source: "First Time Popup",
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          place: formData.place,
+          course: formData.interestedCourse,
+          subject: `New Lead: ${formData.name}`,
+          message: `Interested Course: ${formData.interestedCourse}`,
+          source: "First Time Popup",
+        }),
       });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit popup lead");
+      }
+
       setStatus("success");
       setTimeout(() => {
         handleClose();
@@ -139,6 +151,19 @@ export default function FirstTimePopup() {
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400"
                       placeholder="john@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="place" className="block text-sm font-medium text-gray-700 mb-1">Place</label>
+                    <input
+                      type="text"
+                      id="place"
+                      name="place"
+                      required
+                      value={formData.place}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                      placeholder="Your city or town"
                     />
                   </div>
                   <div>

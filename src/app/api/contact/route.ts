@@ -46,6 +46,7 @@ export async function POST(req: Request) {
           <p><strong>Name:</strong> ${data.name}</p>
           <p><strong>Email:</strong> ${data.email || "N/A"}</p>
           <p><strong>Phone:</strong> ${data.phone || "N/A"}</p>
+          <p><strong>Place:</strong> ${data.place || "N/A"}</p>
           ${data.course ? `<p><strong>Course:</strong> ${data.course}</p>` : ""}
           ${data.location ? `<p><strong>Location:</strong> ${data.location}</p>` : ""}
           <p><strong>Message:</strong></p>

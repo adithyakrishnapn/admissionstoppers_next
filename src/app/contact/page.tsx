@@ -7,7 +7,7 @@ import PageHeader from "@/components/ui/PageHeader";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", place: "", subject: "", message: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,7 +27,7 @@ export default function ContactPage() {
       if (!res.ok) throw new Error("Failed");
 
       setStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", place: "", subject: "", message: "" });
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -102,6 +102,10 @@ export default function ContactPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">Your Email</label>
                         <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="john@example.com" />
                       </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Place</label>
+                      <input type="text" name="place" required value={formData.place} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="Your city or town" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
