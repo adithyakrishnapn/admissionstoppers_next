@@ -41,7 +41,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Admissions Topper" }],
   creator: "Admissions Topper",
   publisher: "Admissions Topper",
-  themeColor: "#06BBCC",
   icons: {
     icon: "/img/at.ico",
     apple: "/img/at.ico",
@@ -86,6 +85,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: appUrl,
   },
+};
+
+export const viewport = {
+  themeColor: "#06BBCC",
 };
 
 export default function RootLayout({

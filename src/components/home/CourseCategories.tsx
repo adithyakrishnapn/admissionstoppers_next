@@ -61,6 +61,7 @@ export default function CourseCategories() {
                     src={cat.image}
                     alt={cat.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 58vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -85,6 +86,7 @@ export default function CourseCategories() {
                     src={cat.image}
                     alt={cat.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 42vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />

@@ -87,7 +87,7 @@ export default async function BlogDetail({
   }
 
   return (
-    <article className="min-h-screen bg-slate-50 pt-24 md:pt-28">
+    <article className="min-h-screen bg-slate-50">
       <div className="relative isolate overflow-hidden bg-[#181d38]">
         <div className="absolute inset-0">
           <Image
@@ -95,6 +95,7 @@ export default async function BlogDetail({
             alt={blog.title}
             unoptimized={isRemoteImage(blog.image)}
             fill
+            sizes="100vw"
             className="object-cover opacity-35 scale-105"
             priority
           />
@@ -103,7 +104,7 @@ export default async function BlogDetail({
           <div className="absolute -left-16 bottom-0 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
         </div>
 
-        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-28 pb-14 md:pt-32 md:pb-20">
           <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-white/75">
             <Link href="/" className="flex items-center gap-1 transition-colors hover:text-primary">
               <Home size={14} />

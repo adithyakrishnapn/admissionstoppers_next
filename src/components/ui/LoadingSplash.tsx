@@ -14,7 +14,7 @@ export default function LoadingSplash({
           <div className="absolute inset-0 rounded-full border-2 border-gray-200" />
           <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin" />
           <div className="absolute inset-2 overflow-hidden rounded-full border border-gray-200 bg-gray-100">
-            <Image src="/img/at.jpg" alt="Admissions Topper" fill priority className="object-cover" />
+            <Image src="/img/at.jpg" alt="Admissions Topper" fill sizes="64px" priority className="object-cover" />
           </div>
         </div>
 

@@ -26,6 +26,7 @@ export default function AboutSummary() {
                 src="/img/about.jpg" 
                 alt="About Admissions Topper" 
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
               />
             </div>
