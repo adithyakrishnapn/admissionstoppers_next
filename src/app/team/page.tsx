@@ -1,5 +1,5 @@
 import PageHeader from "@/components/ui/PageHeader";
-import { Mail, Linkedin, ExternalLink } from "lucide-react";
+import { Mail } from "lucide-react";
 
 interface TeamMember {
   name: string;
@@ -106,7 +106,7 @@ export default function TeamPage() {
                           className="p-2 bg-white/90 hover:bg-white text-gray-900 rounded-lg transition-colors"
                           title="LinkedIn profile"
                         >
-                          <Linkedin size={18} />
+                          in
                         </a>
                       )}
                     </div>
