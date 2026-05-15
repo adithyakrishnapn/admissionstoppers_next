@@ -3,6 +3,7 @@
 import { useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import { Send, CheckCircle } from "lucide-react";
+import { getLeadTrackingData } from "@/lib/leadTracking";
 
 export default function FreeCounsellingPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -17,7 +18,7 @@ export default function FreeCounsellingPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, ...getLeadTrackingData() }),
       });
 
       if (!res.ok) throw new Error("Failed");

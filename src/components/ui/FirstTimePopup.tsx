@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send } from "lucide-react";
+import { getLeadTrackingData } from "@/lib/leadTracking";
 
 export default function FirstTimePopup() {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,7 +44,8 @@ export default function FirstTimePopup() {
           course: formData.interestedCourse,
           subject: `New Lead: ${formData.name}`,
           message: `Interested Course: ${formData.interestedCourse}`,
-          source: "First Time Popup",
+          ...getLeadTrackingData(),
+          submissionChannel: "First Time Popup",
         }),
       });
 

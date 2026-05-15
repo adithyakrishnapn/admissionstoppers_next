@@ -15,6 +15,14 @@ type Lead = {
   status?: "new" | "contacted" | "enrolled" | "rejected";
   createdAt?: string;
   source?: string;
+  referrer?: string;
+  landingPage?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  utmContent?: string;
+  submissionChannel?: string;
 };
 
 const STATUSES = ["new", "contacted", "enrolled", "rejected"] as const;
@@ -67,7 +75,9 @@ export default function LeadsPage() {
         (lead) =>
           lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          lead.phone?.includes(searchTerm)
+          lead.phone?.includes(searchTerm) ||
+          lead.source?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          lead.referrer?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -114,7 +124,7 @@ export default function LeadsPage() {
 
   // Export to CSV
   const handleExportCSV = () => {
-    const headers = ["Name", "Email", "Phone", "Course", "Status", "Source", "Date"];
+    const headers = ["Name", "Email", "Phone", "Course", "Status", "Source", "Referrer", "Date"];
     const rows = filteredLeads.map((lead) => [
       lead.name || "N/A",
       lead.email || "N/A",
@@ -122,6 +132,7 @@ export default function LeadsPage() {
       lead.course || "N/A",
       lead.status || "new",
       lead.source || "N/A",
+      lead.referrer || "N/A",
       lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : "N/A",
     ]);
 
@@ -200,6 +211,7 @@ export default function LeadsPage() {
                 <th className="px-6 py-4">Name</th>
                 <th className="px-6 py-4">Contact</th>
                 <th className="px-6 py-4">Course</th>
+                <th className="px-6 py-4">Source</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4">Actions</th>
@@ -215,6 +227,12 @@ export default function LeadsPage() {
                       <div className="text-xs text-gray-400">{lead.phone || "N/A"}</div>
                     </td>
                     <td className="px-6 py-4 capitalize text-gray-600">{lead.course || "N/A"}</td>
+                    <td className="px-6 py-4 text-gray-600">
+                      <div className="font-medium text-gray-900">{lead.source || "Direct visit"}</div>
+                      <div className="text-xs text-gray-400 truncate max-w-[220px]">
+                        {lead.referrer || lead.submissionChannel || "N/A"}
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
                       <select
                         value={lead.status || "new"}
@@ -258,7 +276,7 @@ export default function LeadsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                     No leads found
                   </td>
                 </tr>
@@ -348,7 +366,19 @@ export default function LeadsPage() {
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase">Source</label>
-                <p className="text-gray-900 font-medium">{selectedLead.source || "Website"}</p>
+                <p className="text-gray-900 font-medium">{selectedLead.source || "Direct visit"}</p>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Referrer</label>
+                <p className="text-gray-900 font-medium break-all">{selectedLead.referrer || "N/A"}</p>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Landing Page</label>
+                <p className="text-gray-900 font-medium break-all">{selectedLead.landingPage || "N/A"}</p>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Submission Channel</label>
+                <p className="text-gray-900 font-medium">{selectedLead.submissionChannel || "N/A"}</p>
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase">Received Date</label>

@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import WhatsAppCTA from "@/components/ui/WhatsAppCTA";
 import FirstTimePopup from "@/components/ui/FirstTimePopup";
 import Preloader from "@/components/ui/Preloader";
+import LeadSourceTracker from "@/components/ui/LeadSourceTracker";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -154,6 +155,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans text-gray-800 bg-gray-50/50">
         <Preloader />
+        <LeadSourceTracker />
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />

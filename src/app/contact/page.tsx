@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Mail, MapPin, Phone, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import PageHeader from "@/components/ui/PageHeader";
+import { getLeadTrackingData } from "@/lib/leadTracking";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -21,7 +22,7 @@ export default function ContactPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, ...getLeadTrackingData() }),
       });
 
       if (!res.ok) throw new Error("Failed");
