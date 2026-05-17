@@ -2,6 +2,7 @@ export type LeadTrackingData = {
   source?: string;
   referrer?: string;
   landingPage?: string;
+  pagePath?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
@@ -56,6 +57,7 @@ function captureLeadTrackingData(): LeadTrackingData {
     source: getSourceLabel(referrer, utmSource),
     referrer: referrer || undefined,
     landingPage: window.location.href,
+    pagePath: `${window.location.pathname}${window.location.search}`,
     utmSource: utmSource || undefined,
     utmMedium: utmMedium || undefined,
     utmCampaign: utmCampaign || undefined,

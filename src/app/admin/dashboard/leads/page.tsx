@@ -17,6 +17,7 @@ type Lead = {
   source?: string;
   referrer?: string;
   landingPage?: string;
+  pagePath?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
@@ -77,7 +78,8 @@ export default function LeadsPage() {
           lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           lead.phone?.includes(searchTerm) ||
           lead.source?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          lead.referrer?.toLowerCase().includes(searchTerm.toLowerCase())
+            lead.referrer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            lead.pagePath?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -124,7 +126,7 @@ export default function LeadsPage() {
 
   // Export to CSV
   const handleExportCSV = () => {
-    const headers = ["Name", "Email", "Phone", "Course", "Status", "Source", "Referrer", "Date"];
+    const headers = ["Name", "Email", "Phone", "Course", "Status", "Source", "Page Path", "Referrer", "Date"];
     const rows = filteredLeads.map((lead) => [
       lead.name || "N/A",
       lead.email || "N/A",
@@ -132,6 +134,7 @@ export default function LeadsPage() {
       lead.course || "N/A",
       lead.status || "new",
       lead.source || "N/A",
+      lead.pagePath || "N/A",
       lead.referrer || "N/A",
       lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : "N/A",
     ]);
@@ -212,6 +215,7 @@ export default function LeadsPage() {
                 <th className="px-6 py-4">Contact</th>
                 <th className="px-6 py-4">Course</th>
                 <th className="px-6 py-4">Source</th>
+                <th className="px-6 py-4">Page</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4">Actions</th>
@@ -231,6 +235,11 @@ export default function LeadsPage() {
                       <div className="font-medium text-gray-900">{lead.source || "Direct visit"}</div>
                       <div className="text-xs text-gray-400 truncate max-w-[220px]">
                         {lead.referrer || lead.submissionChannel || "N/A"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      <div className="font-medium text-gray-900 truncate max-w-[220px]">
+                        {lead.pagePath || lead.landingPage || "N/A"}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -276,7 +285,7 @@ export default function LeadsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                     No leads found
                   </td>
                 </tr>
@@ -375,6 +384,10 @@ export default function LeadsPage() {
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase">Landing Page</label>
                 <p className="text-gray-900 font-medium break-all">{selectedLead.landingPage || "N/A"}</p>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Page Route</label>
+                <p className="text-gray-900 font-medium break-all">{selectedLead.pagePath || "N/A"}</p>
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase">Submission Channel</label>
