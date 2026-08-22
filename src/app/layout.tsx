@@ -7,6 +7,8 @@ import WhatsAppCTA from "@/components/ui/WhatsAppCTA";
 import FirstTimePopup from "@/components/ui/FirstTimePopup";
 import Preloader from "@/components/ui/Preloader";
 import LeadSourceTracker from "@/components/ui/LeadSourceTracker";
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 
 const inter = Inter({
   variable: "--font-inter",
@@ -106,7 +108,7 @@ export default function RootLayout({
       <head>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
-        
+
         {/* JSON-LD Schema for Organization */}
         <script
           type="application/ld+json"
@@ -131,7 +133,7 @@ export default function RootLayout({
             }),
           }}
         />
-        
+
         {/* JSON-LD Schema for WebSite */}
         <script
           type="application/ld+json"
@@ -161,6 +163,7 @@ export default function RootLayout({
         <Footer />
         <WhatsAppCTA />
         <FirstTimePopup />
+        <GoogleAnalytics gaId="G-KJ1G53YC6F" />
       </body>
     </html>
   );
